@@ -78,7 +78,7 @@ public class PessoaResource {
 	}
 	
 	@DeleteMapping("/{codigo}")
-	@PreAuthorize("hasAuhtority('ROLE_REMOVER_PESSOA') and #oauth2.hasScope('read')")
+	@PreAuthorize("hasAuthority('ROLE_REMOVER_PESSOA') and #oauth2.hasScope('read')")
 	//@ResponseStatus(HttpStatus.NO_CONTENT) //Outra maneira, mais direta, de devolver a reposta para a API
 	public ResponseEntity<Pessoa> removerPessoa(@PathVariable Long codigo, HttpServletResponse response) {
 		//Etapa 1 - remove do banco

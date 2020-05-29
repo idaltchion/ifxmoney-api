@@ -126,7 +126,13 @@
 		</dependency>
 
 
-
+		<!-- Utilizado na criacao de Profiles -->
+		<!-- Adicionado pela annotation @ConfigurationProperty da classe IfxmoneyApiProperty --> 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 	<build>
