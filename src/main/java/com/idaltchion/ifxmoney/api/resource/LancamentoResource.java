@@ -76,14 +76,14 @@ public class LancamentoResource {
 	}
 	
 	@DeleteMapping("/{codigo}")
-	@PreAuthorize("hasAuthority('ROLE_REMOVER_LANCAMENTO') and #oauth2.hasScope('read')") //read para testar somente
+	@PreAuthorize("hasAuthority('ROLE_REMOVER_LANCAMENTO') and #oauth2.hasScope('write')")
 	public ResponseEntity<Lancamento> remover(@PathVariable Long codigo) {
 		lancamentoRepository.deleteById(codigo);
 		return ResponseEntity.noContent().build();
 	}
 	
 	@PostMapping
-	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('read')") //read para testar somente
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write')")
 	public ResponseEntity<Lancamento> adicionarLancamento(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response) {
 		/* Ocorre autoincremento na tabela lancamento do banco quando passa um codigo de categoria ou pessoa que nao existem. 
 		 * Verificar solucao para esse caso
