@@ -1,5 +1,6 @@
 package com.idaltchion.ifxmoney.api.resource;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,9 +24,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorCategoria;
+import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorDia;
 import com.idaltchion.ifxmoney.api.event.ResourceCreatedEvent;
 import com.idaltchion.ifxmoney.api.exceptionhandler.IfxmoneyExceptionHandler.Erro;
 import com.idaltchion.ifxmoney.api.model.Lancamento;
@@ -111,5 +113,19 @@ public class LancamentoResource {
 		String mensagemDesenvolvedor = ex.toString();
 		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor));
 		return ResponseEntity.badRequest().body(erros);
+	}
+	
+	@GetMapping("/estatisticas/por-categoria")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
+	public List<LancamentoEstatisticaPorCategoria> porCategoria() {
+		//TODO: alterar codigo para possibilitar escolher o mes de referencia ?via paramentro na requisicao?
+		return lancamentoRepository.porCategoria(LocalDate.of(2020, 6, 1));
+	}
+	
+	@GetMapping("/estatisticas/por-dia")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
+	public List<LancamentoEstatisticaPorDia> porDia() {
+		//TODO: alterar codigo para possibilitar escolher o mes de referencia ?via paramentro na requisicao?
+		return lancamentoRepository.porDia(LocalDate.of(2020, 6, 1));
 	}
 }
