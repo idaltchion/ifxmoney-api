@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorCategoria;
 import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorDia;
+import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorPessoa;
 import com.idaltchion.ifxmoney.api.model.Categoria_;
 import com.idaltchion.ifxmoney.api.model.Lancamento;
 import com.idaltchion.ifxmoney.api.model.Lancamento_;
@@ -158,6 +159,28 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 		criteriaQuery.groupBy(root.get(Lancamento_.tipo), root.get(Lancamento_.dataVencimento));
 		
 		TypedQuery<LancamentoEstatisticaPorDia> typedQuery = manager.createQuery(criteriaQuery);
+		
+		return typedQuery.getResultList();
+	}
+	
+	@Override
+	public List<LancamentoEstatisticaPorPessoa> porPessoa(LocalDate dataInicial, LocalDate dataFinal) {
+		CriteriaBuilder builder = manager.getCriteriaBuilder();
+		CriteriaQuery<LancamentoEstatisticaPorPessoa> criteriaQuery = builder.createQuery(LancamentoEstatisticaPorPessoa.class);
+		Root<Lancamento> root = criteriaQuery.from(Lancamento.class);
+		
+		criteriaQuery.select(builder.construct(LancamentoEstatisticaPorPessoa.class, 
+				root.get(Lancamento_.tipo),
+				root.get(Lancamento_.pessoa),
+				builder.sum(root.get(Lancamento_.valor))));
+		
+		criteriaQuery.where(
+				builder.greaterThanOrEqualTo(root.get(Lancamento_.dataVencimento), dataInicial),
+				builder.lessThanOrEqualTo(root.get(Lancamento_.dataVencimento), dataFinal));
+		
+		criteriaQuery.groupBy(root.get(Lancamento_.tipo), root.get(Lancamento_.pessoa));
+		
+		TypedQuery<LancamentoEstatisticaPorPessoa> typedQuery = manager.createQuery(criteriaQuery);
 		
 		return typedQuery.getResultList();
 	}

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorCategoria;
 import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorDia;
+import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorPessoa;
 import com.idaltchion.ifxmoney.api.model.Lancamento;
 import com.idaltchion.ifxmoney.api.repository.filter.LancamentoFilter;
 import com.idaltchion.ifxmoney.api.resource.projection.ResumoLancamento;
@@ -22,5 +23,6 @@ public interface LancamentoRepositoryQuery {
 	public Page<ResumoLancamento> resumir(LancamentoFilter lancamentoFilter, Pageable pageable);
 	public List<LancamentoEstatisticaPorCategoria> porCategoria(LocalDate mesReferencia);
 	public List<LancamentoEstatisticaPorDia> porDia(LocalDate mesReferencia);
+	public List<LancamentoEstatisticaPorPessoa> porPessoa(LocalDate dataInicial, LocalDate dataFinal);
 	
 }
