@@ -1,7 +1,5 @@
 package com.idaltchion.ifxmoney.api.resource;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -68,7 +66,7 @@ public class PessoaResource {
 	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and #oauth2.hasScope('read')")
 	public ResponseEntity<Pessoa> adicionarPessoa(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
 		//etapa 1 - adicionar no banco
-		Pessoa novaPessoa = pessoaRepository.save(pessoa);
+		Pessoa novaPessoa = pessoaService.salvar(pessoa);
 		
 		//etapa 2 - montar a URI
 		publisher.publishEvent(new ResourceCreatedEvent(this, response, novaPessoa.getCodigo()));

@@ -152,6 +152,18 @@
 			<version>6.13.0</version>
 		</dependency>
 
+		<!-- Funcionalidade de E-mail -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
+		<!-- Habilitar a funcionalidade do Thymeleaf (usando como template de e-mail) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -163,12 +175,6 @@
 		</plugins>
 	</build>
 
-	<!-- 
-	<repositories>
-		<repository>
-			<id>jr-ce-releases</id>
-			<url>http://jaspersoft.artifactoryonline.com/jaspersoft/jr-ce-releases</url>
-		</repository>
-	</repositories>
-	-->
+	<!-- <repositories> <repository> <id>jr-ce-releases</id> <url>http://jaspersoft.artifactoryonline.com/jaspersoft/jr-ce-releases</url> 
+		</repository> </repositories> -->
 </project>

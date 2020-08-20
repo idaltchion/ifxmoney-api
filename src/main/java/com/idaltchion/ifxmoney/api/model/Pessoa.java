@@ -1,16 +1,22 @@
 package com.idaltchion.ifxmoney.api.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "pessoas")
@@ -29,6 +35,19 @@ public class Pessoa {
 
 	@Embedded
 	private Endereco endereco;
+
+	@Valid
+	@OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnoreProperties("pessoa") //resolve o problema de referencia circular. Lê-se: ignore a propriedade 'pessoa' da classe 'Contato'
+	private List<Contato> contatos;
+	
+	public List<Contato> getContatos() {
+		return contatos;
+	}
+
+	public void setContatos(List<Contato> contatos) {
+		this.contatos = contatos;
+	}
 
 	public Long getCodigo() {
 		return codigo;

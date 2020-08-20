@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "lancamento")
 public class Lancamento {
@@ -52,6 +54,12 @@ public class Lancamento {
 	@Enumerated(EnumType.STRING)
 	private TipoLancamento tipo;
 
+	/* metodo utilizado no template .html de notificacao de lancamentos vencidos '${lancamento.receita}' */
+	@JsonIgnore
+	public boolean isReceita() {
+		return TipoLancamento.RECEITA.equals(this.tipo);
+	}
+	
 	public Long getCodigo() {
 		return codigo;
 	}

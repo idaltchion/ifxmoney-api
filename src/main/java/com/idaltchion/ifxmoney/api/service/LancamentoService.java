@@ -10,15 +10,21 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorPessoa;
+import com.idaltchion.ifxmoney.api.mail.Mailer;
 import com.idaltchion.ifxmoney.api.model.Lancamento;
 import com.idaltchion.ifxmoney.api.model.Pessoa;
+import com.idaltchion.ifxmoney.api.model.Usuario;
 import com.idaltchion.ifxmoney.api.repository.LancamentoRepository;
 import com.idaltchion.ifxmoney.api.repository.PessoaRepository;
+import com.idaltchion.ifxmoney.api.repository.UsuarioRepository;
 import com.idaltchion.ifxmoney.api.service.exception.PessoaInexistenteOuInativaException;
 
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -32,6 +38,8 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 @Service
 public class LancamentoService {
 
+	private static final String PERMISSAO = "ROLE_PESQUISAR_LANCAMENTO";
+	
 	/*
 	 * A classe repository pode ser utilizada em qq parte do sistema? Nao viola o
 	 * MVC? Verificar.
@@ -41,7 +49,15 @@ public class LancamentoService {
 
 	@Autowired
 	private LancamentoRepository lancamentoRepository;
-
+	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private Mailer mailer;
+	
+	private static final Logger logger = LoggerFactory.getLogger(Lancamento.class);
+	
 	public Lancamento salvar(@Valid Lancamento lancamento) {
 		Pessoa pessoa = pessoaRepository.getOne(lancamento.getPessoa().getCodigo());
 		if (pessoa == null || pessoa.isInativo()) {
@@ -73,5 +89,31 @@ public class LancamentoService {
 		
 		return JasperExportManager.exportReportToPdf(jasperPrint);
 	}
+	
+	/* second, minute, hour, day of month, month and day of week */
+	@Scheduled(cron = "0 0 6 * * *")
+	//@Scheduled(fixedDelay = 1000 * 60 * 5)
+	public void notificacaoLancamentosVencidos() {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Procedimento para envio de email iniciado");
+		}
+		List<Lancamento> lancamentosVencidos = lancamentoRepository
+				.findByDataVencimentoLessThanEqualAndDataPagamentoIsNull(LocalDate.now());
+		if (lancamentosVencidos.isEmpty()) {
+			logger.info("Nao existem lancamentos vencidos para envio de e-mail");
+			return;
+		}
+		logger.info("Existem {} lancamentos vencidos", lancamentosVencidos.size());
+		List<Usuario> destinatarios = usuarioRepository.findByPermissoesDescricao(PERMISSAO);
+		if (destinatarios.isEmpty()) {
+			logger.warn("Existem lancamentos vencidos para envio de e-mail, mas nenhum destinatario cadastrado");
+			return;
+		}
+		mailer.notificarLancamentosVencidos(lancamentosVencidos, destinatarios);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Procedimento para envio de email concluido");			
+		}
+	}
+	
 
 }

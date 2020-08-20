@@ -20,9 +20,12 @@ public class PessoaService {
 	public Pessoa atualizarPessoa(Long codigo, Pessoa pessoa) {
 		//Etapa 1 - busca no banco
 		Pessoa pessoaSalva = pessoaRepository.findById(codigo).get();
+		pessoaSalva.getContatos().clear();
+		pessoaSalva.getContatos().addAll(pessoa.getContatos());
+		pessoaSalva.getContatos().forEach(c -> c.setPessoa(pessoaSalva));
 		
 		//Etapa 2 - copia as propriedades da pessoa conforme a requisição
-		BeanUtils.copyProperties(pessoa, pessoaSalva, "codigo");
+		BeanUtils.copyProperties(pessoa, pessoaSalva, "codigo", "contatos");
 				
 		//Etapa 3 - salva a pessoa novamente, agora com os atributos atualizados
 		return pessoaRepository.save(pessoaSalva);
@@ -37,6 +40,11 @@ public class PessoaService {
 		
 		//Etapa 3 - salva no banco
 		pessoaRepository.save(pessoaSalva);
-	}	
+	}
+	
+	public Pessoa salvar(Pessoa pessoa) {
+		pessoa.getContatos().forEach(c -> c.setPessoa(pessoa));
+		return pessoaRepository.save(pessoa);
+	}
 	
 }
