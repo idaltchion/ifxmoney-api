@@ -1,5 +1,8 @@
 package com.idaltchion.ifxmoney.api.resource;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorCategoria;
 import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorDia;
@@ -147,4 +151,14 @@ public class LancamentoResource {
 				.headers(headers)
 				.body(relatorio);
 	}
+	
+	@PostMapping("/anexo")
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write')")
+	public String anexarArquivo(@RequestParam MultipartFile anexo) throws IOException {
+		OutputStream outputStream = new FileOutputStream("/home/idaltchion/Desktop/anexo--" + anexo.getOriginalFilename());
+		outputStream.write(anexo.getBytes());
+		outputStream.close();
+		return "ok";
+	}
+	
 }
