@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorPessoa;
 import com.idaltchion.ifxmoney.api.mail.Mailer;
@@ -26,6 +27,7 @@ import com.idaltchion.ifxmoney.api.repository.LancamentoRepository;
 import com.idaltchion.ifxmoney.api.repository.PessoaRepository;
 import com.idaltchion.ifxmoney.api.repository.UsuarioRepository;
 import com.idaltchion.ifxmoney.api.service.exception.PessoaInexistenteOuInativaException;
+import com.idaltchion.ifxmoney.api.storage.S3;
 
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -56,6 +58,9 @@ public class LancamentoService {
 	@Autowired
 	private Mailer mailer;
 	
+	@Autowired
+	private S3 s3;
+	
 	private static final Logger logger = LoggerFactory.getLogger(Lancamento.class);
 	
 	public Lancamento salvar(@Valid Lancamento lancamento) {
@@ -63,6 +68,11 @@ public class LancamentoService {
 		if (pessoa == null || pessoa.isInativo()) {
 			throw new PessoaInexistenteOuInativaException();
 		}
+		
+		if (StringUtils.hasText(lancamento.getAnexo())) {
+			s3.salvar(lancamento.getAnexo());
+		}
+		
 		return lancamentoRepository.save(lancamento);
 	}
 
@@ -70,6 +80,13 @@ public class LancamentoService {
 		// Etapa 1: busca o lancamento no banco
 		Lancamento lancamentoSalvo = lancamentoRepository.findById(codigo).get();
 
+		if (StringUtils.isEmpty(lancamento.getAnexo()) && StringUtils.hasText(lancamentoSalvo.getAnexo())) {
+			s3.remover(lancamentoSalvo.getAnexo());
+		}
+		else if (StringUtils.hasText(lancamento.getAnexo()) && !lancamento.getAnexo().equals(lancamentoSalvo.getAnexo())) {
+			s3.substituir(lancamentoSalvo.getAnexo(), lancamento.getAnexo());
+		}
+		
 		// Etapa 2: Copia as propriedades do lancamento
 		BeanUtils.copyProperties(lancamento, lancamentoSalvo, "codigo");
 

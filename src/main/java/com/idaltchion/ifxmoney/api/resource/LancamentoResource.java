@@ -1,8 +1,6 @@
 package com.idaltchion.ifxmoney.api.resource;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.idaltchion.ifxmoney.api.dto.Anexo;
 import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorCategoria;
 import com.idaltchion.ifxmoney.api.dto.LancamentoEstatisticaPorDia;
 import com.idaltchion.ifxmoney.api.event.ResourceCreatedEvent;
@@ -44,6 +43,7 @@ import com.idaltchion.ifxmoney.api.repository.filter.LancamentoFilter;
 import com.idaltchion.ifxmoney.api.resource.projection.ResumoLancamento;
 import com.idaltchion.ifxmoney.api.service.LancamentoService;
 import com.idaltchion.ifxmoney.api.service.exception.PessoaInexistenteOuInativaException;
+import com.idaltchion.ifxmoney.api.storage.S3;
 
 @RestController
 @RequestMapping("/lancamentos")
@@ -60,6 +60,9 @@ public class LancamentoResource {
 	
 	@Autowired
 	private MessageSource messageSource;
+	
+	@Autowired
+	private S3 s3;
 	
 	@GetMapping
 	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
@@ -154,11 +157,9 @@ public class LancamentoResource {
 	
 	@PostMapping("/anexo")
 	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write')")
-	public String anexarArquivo(@RequestParam MultipartFile anexo) throws IOException {
-		OutputStream outputStream = new FileOutputStream("/home/idaltchion/Desktop/anexo--" + anexo.getOriginalFilename());
-		outputStream.write(anexo.getBytes());
-		outputStream.close();
-		return "ok";
+	public Anexo anexarArquivo(@RequestParam MultipartFile anexo) throws IOException {
+		String nome = s3.salvarTemporariamente(anexo);
+		return new Anexo(nome, s3.configurarUrl(nome));
 	}
 	
 }

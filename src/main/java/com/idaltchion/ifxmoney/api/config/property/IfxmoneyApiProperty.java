@@ -20,8 +20,11 @@ public class IfxmoneyApiProperty {
 		this.origemPermitida = origemPermitida;
 	}
 
-
+	/*
+	 * Seguranca properties
+	 */
 	private final Seguranca seguranca = new Seguranca();
+
 	public Seguranca getSeguranca() {
 		return seguranca;
 	}
@@ -40,15 +43,19 @@ public class IfxmoneyApiProperty {
 
 	}
 	
+	/*
+	 * Mail properties
+	 */
 	private final Mail mail = new Mail();
+
 	public Mail getMail() {
 		return mail;
 	}
-	
+
 	public static class Mail {
 		private String host;
 		private Integer port;
-		private String usuario;
+		private String username;
 		private String password;
 
 		public String getHost() {
@@ -67,12 +74,12 @@ public class IfxmoneyApiProperty {
 			this.port = port;
 		}
 
-		public String getUsuario() {
-			return usuario;
+		public String getUsername() {
+			return username;
 		}
 
-		public void setUsuario(String usuario) {
-			this.usuario = usuario;
+		public void setUsername(String username) {
+			this.username = username;
 		}
 
 		public String getPassword() {
@@ -83,6 +90,46 @@ public class IfxmoneyApiProperty {
 			this.password = password;
 		}
 
+	}
+
+	/*
+	 * AmazonS3 properties
+	 */
+	private final S3 s3 = new S3();
+	
+	public S3 getS3() {
+		return s3;
+	}
+
+	public static class S3 {
+		private String accessKey;
+		private String secretAccessKey;
+		private String bucket = "ifx-ifxmoney-files";
+		
+		public String getBucket() {
+			return bucket;
+		}
+		
+		public void setBucket(String bucket) {
+			this.bucket = bucket;
+		}
+		
+		public String getAccessKey() {
+			return accessKey;
+		}
+
+		public void setAccessKey(String accessKey) {
+			this.accessKey = accessKey;
+		}
+
+		public String getSecretAccessKey() {
+			return secretAccessKey;
+		}
+
+		public void setSecretAccessKey(String secretAccessKey) {
+			this.secretAccessKey = secretAccessKey;
+		}
+		
 	}
 
 }

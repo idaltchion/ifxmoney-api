@@ -29,7 +29,7 @@ public class MailConfig {
 		mailSender.setJavaMailProperties(props);
 		mailSender.setHost(property.getMail().getHost());
 		mailSender.setPort(property.getMail().getPort());
-		mailSender.setUsername(property.getMail().getUsuario());
+		mailSender.setUsername(property.getMail().getUsername());
 		mailSender.setPassword(property.getMail().getPassword());
 		
 		return mailSender;
