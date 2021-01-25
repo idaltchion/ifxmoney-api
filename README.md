@@ -18,6 +18,16 @@ Senha : `visitante`
 * Notificação de Lançamentos por E-mail
 * Autenticação de Segurança utilizando oAuth2
 
+## Tecnologias utilizadas
+
+* Spring (Boot, Data JPA, Security OAuth)
+* Hibernate (especificação JPA)
+* MySQL
+* FlyWay
+* Jasper Reports
+* Thymeleaf
+* Amazon S3
+
 ## Contato
 
 Qualquer dúvida, crítica ou sugestão não deixe de entrar em contato através do e-mail disponível no perfil.
